@@ -104,7 +104,7 @@ She took the witness seat carrying no binder to the table, only the summary shee
 
 The chair asked the procedural question first.
 
-"Ms. Navarro, given the retention breach, do you believe any future shared-state event can remain ethically legitimate."
+"Ms. Narang, given the retention breach, do you believe any future shared-state event can remain ethically legitimate."
 
 Leah looked at the panel, then at the delegations, then briefly up at the public gallery where three cameras had already found the angle they hoped would make her look like either conscience or obstruction.
 
@@ -146,7 +146,7 @@ Too bad.
 
 The criminal-law delegate who had spoken earlier requested the microphone and received it with the reluctance institutions reserved for people likely to embarrass the agenda by enjoying themselves.
 
-"Ms. Navarro," he said, "you describe an architecture of extraction that appears, by your own account, endemic to the category. Yet you stop short of recommending a permanent ban. Why."
+"Ms. Narang," he said, "you describe an architecture of extraction that appears, by your own account, endemic to the category. Yet you stop short of recommending a permanent ban. Why."
 
 Leah looked directly at him.
 

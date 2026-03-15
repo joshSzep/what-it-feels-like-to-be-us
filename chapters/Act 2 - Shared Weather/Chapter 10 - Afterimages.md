@@ -306,7 +306,7 @@ The corridor outside the small press-prep suite on the fourth floor smelled like
 
 08:37 Foundational Context: Matt Alden
 
-08:45 Participant Safety Overview: Dr. Amina Farouk
+08:45 Participant Safety Overview: Dr. Amina Rahal
 
 08:52 Questions
 
