@@ -250,6 +250,10 @@ Good.
 
 "All right," Amina said. "Let's begin with the first local sync."
 
+Nothing activated immediately.
+
+At each cluster, stewards walked the aisles and waited while participants made the same plain choice in full view of one another without having to narrate it: contact in hand meant yes for now, contact left on the chair meant not yet, standing and moving toward the corridor meant no. No applause. No countdown. No language of readiness. Just a room watching choice remain visible without becoming spectacle.
+
 The initial phase was smaller by design. Barcelona's main floor entering in clusters, remote nodes in delayed sequence, quiet rooms open from the start, exits unguarded except by courtesy and floor staff trained to keep their own concern from acquiring a public face.
 
 Still the room hit harder than the planners had let themselves admit in meetings.
