@@ -29,33 +29,64 @@ html_escape() {
 }
 
 format_integer() {
-  awk -v value="$1" 'BEGIN {
-    formatted = sprintf("%d", value)
-    while (sub(/^(-?[0-9]+)([0-9][0-9][0-9])/, "\\1,\\2", formatted)) {}
-    print formatted
-  }'
+  local value="$1"
+  local sign=""
+  local formatted=""
+
+  if [[ "$value" == -* ]]; then
+    sign="-"
+    value="${value#-}"
+  fi
+
+  while ((${#value} > 3)); do
+    formatted=",${value: -3}${formatted}"
+    value="${value:0:${#value}-3}"
+  done
+
+  printf '%s%s%s\n' "$sign" "$value" "$formatted"
 }
 
-extract_paragraph_after_heading() {
+extract_paragraphs_after_heading() {
   local heading="$1"
+  local start_paragraph="${2:-1}"
+  local paragraph_limit="${3:-1}"
 
-  awk -v heading="$heading" '
+  awk -v heading="$heading" -v start_paragraph="$start_paragraph" -v paragraph_limit="$paragraph_limit" '
+    function flush_paragraph() {
+      if (paragraph == "") {
+        return
+      }
+
+      paragraph_index++
+
+      if (paragraph_index >= start_paragraph && (paragraph_limit == 0 || collected < paragraph_limit)) {
+        if (output != "") {
+          output = output "\n\n"
+        }
+
+        output = output paragraph
+        collected++
+      }
+
+      paragraph = ""
+    }
+
     $0 == heading {
       capture = 1
       next
     }
 
     capture && /^### / {
+      flush_paragraph()
       exit
     }
 
-    capture && started && $0 == "" {
-      exit
+    capture && $0 == "" {
+      flush_paragraph()
+      next
     }
 
     capture && $0 != "" {
-      started = 1
-
       if (paragraph != "") {
         paragraph = paragraph " " $0
       } else {
@@ -64,7 +95,71 @@ extract_paragraph_after_heading() {
     }
 
     END {
-      print paragraph
+      flush_paragraph()
+      if (output != "") {
+        print output
+      }
+    }
+  ' "$manuscript_file"
+}
+
+extract_paragraph_html_after_heading() {
+  local heading="$1"
+  local start_paragraph="${2:-1}"
+  local paragraph_limit="${3:-1}"
+
+  awk -v heading="$heading" -v start_paragraph="$start_paragraph" -v paragraph_limit="$paragraph_limit" '
+    function escape_html(value, escaped) {
+      escaped = value
+      gsub(/&/, "\\&amp;", escaped)
+      gsub(/</, "\\&lt;", escaped)
+      gsub(/>/, "\\&gt;", escaped)
+      gsub(/\"/, "\\&quot;", escaped)
+      gsub(/\047/, "\\&#39;", escaped)
+      return escaped
+    }
+
+    function flush_paragraph(escaped) {
+      if (paragraph == "") {
+        return
+      }
+
+      paragraph_index++
+
+      if (paragraph_index >= start_paragraph && (paragraph_limit == 0 || collected < paragraph_limit)) {
+        escaped = escape_html(paragraph)
+        printf "            <p>%s</p>\n", escaped
+        collected++
+      }
+
+      paragraph = ""
+    }
+
+    $0 == heading {
+      capture = 1
+      next
+    }
+
+    capture && /^### / {
+      flush_paragraph()
+      exit
+    }
+
+    capture && $0 == "" {
+      flush_paragraph()
+      next
+    }
+
+    capture && $0 != "" {
+      if (paragraph != "") {
+        paragraph = paragraph " " $0
+      } else {
+        paragraph = $0
+      }
+    }
+
+    END {
+      flush_paragraph()
     }
   ' "$manuscript_file"
 }
@@ -129,12 +224,17 @@ act_count="$(grep -c '^## ' "$manuscript_file")"
 pdf_size="$(stat -f '%z' "$pdf_file" | awk '{printf "%.1f MB", $1 / 1048576}')"
 updated_stamp="$(date -r "$manuscript_file" '+%B %Y')"
 
-opening_excerpt_raw="$(extract_paragraph_after_heading '### Chapter 01 - Borrowed Weather')"
-privacy_excerpt_raw="$(extract_paragraph_after_heading '### Chapter 02 - What Remains Private')"
-infrastructure_excerpt_raw="$(extract_paragraph_after_heading '### Chapter 03 - Infrastructure')"
+opening_excerpt_raw="$(extract_paragraphs_after_heading '### Chapter 01 - Borrowed Weather' 1 1)"
+privacy_excerpt_raw="$(extract_paragraphs_after_heading '### Chapter 02 - What Remains Private' 1 1)"
+infrastructure_excerpt_raw="$(extract_paragraphs_after_heading '### Chapter 03 - Infrastructure' 1 1)"
+opening_excerpt_more_html="$(extract_paragraph_html_after_heading '### Chapter 01 - Borrowed Weather' 2 4)"
 
 if [[ -z "$opening_excerpt_raw" ]]; then
   opening_excerpt_raw='The line both brothers hesitated over was the same one nearly everyone hesitated over now.'
+fi
+
+if [[ -z "$opening_excerpt_more_html" ]]; then
+  opening_excerpt_more_html='            <p>NO SESSION DATA WILL BE RETAINED BEYOND LIVE SAFETY MONITORING.</p>'
 fi
 
 if [[ -z "$privacy_excerpt_raw" ]]; then
@@ -671,14 +771,29 @@ cat > "$index_file" <<EOF
 
     .quote-panel blockquote {
       margin: 1.2rem 0 0;
-      max-width: 17ch;
+      max-width: 14ch;
       font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
       font-size: clamp(2rem, 4vw, 3.8rem);
       line-height: 1.05;
       letter-spacing: -0.04em;
     }
 
-    .quote-panel p {
+    .quote-panel .excerpt-flow {
+      display: grid;
+      gap: 1rem;
+      max-width: 48rem;
+      margin-top: 1.8rem;
+    }
+
+    .quote-panel .excerpt-flow p {
+      color: rgba(245, 239, 230, 0.86);
+      max-width: 48rem;
+      line-height: 1.9;
+      margin-top: 0;
+      font-size: 1.02rem;
+    }
+
+    .quote-panel .excerpt-note {
       color: var(--muted);
       max-width: 44rem;
       line-height: 1.75;
@@ -1078,7 +1193,9 @@ cat > "$index_file" <<EOF
         <div class="quote-panel" data-reveal>
           <p class="section-label">Opening pulse</p>
           <blockquote>$opening_excerpt</blockquote>
-          <p>The novel begins in a room designed for care rather than spectacle, then widens into a world where empath technology has escaped regulation, entered ordinary life, and started testing the moral limits of shared feeling at planetary scale.</p>
+          <div class="excerpt-flow">
+$opening_excerpt_more_html          </div>
+          <p class="excerpt-note">The novel begins in a room designed for care rather than spectacle, then widens into a world where empath technology has escaped regulation, entered ordinary life, and started testing the moral limits of shared feeling at planetary scale.</p>
         </div>
       </section>
 

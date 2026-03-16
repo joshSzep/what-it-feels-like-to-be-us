@@ -518,14 +518,29 @@
 
     .quote-panel blockquote {
       margin: 1.2rem 0 0;
-      max-width: 17ch;
+      max-width: 14ch;
       font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
       font-size: clamp(2rem, 4vw, 3.8rem);
       line-height: 1.05;
       letter-spacing: -0.04em;
     }
 
-    .quote-panel p {
+    .quote-panel .excerpt-flow {
+      display: grid;
+      gap: 1rem;
+      max-width: 48rem;
+      margin-top: 1.8rem;
+    }
+
+    .quote-panel .excerpt-flow p {
+      color: rgba(245, 239, 230, 0.86);
+      max-width: 48rem;
+      line-height: 1.9;
+      margin-top: 0;
+      font-size: 1.02rem;
+    }
+
+    .quote-panel .excerpt-note {
       color: var(--muted);
       max-width: 44rem;
       line-height: 1.75;
@@ -892,7 +907,7 @@
             </article>
             <article class="stat">
               <p class="stat-label">Words</p>
-              <p class="stat-value">\1,\2</p>
+              <p class="stat-value">70,213</p>
             </article>
           </div>
         </div>
@@ -925,7 +940,12 @@
         <div class="quote-panel" data-reveal>
           <p class="section-label">Opening pulse</p>
           <blockquote>The line both brothers hesitated over was the same one nearly everyone hesitated over now.</blockquote>
-          <p>The novel begins in a room designed for care rather than spectacle, then widens into a world where empath technology has escaped regulation, entered ordinary life, and started testing the moral limits of shared feeling at planetary scale.</p>
+          <div class="excerpt-flow">
+            <p>NO SESSION DATA WILL BE RETAINED BEYOND LIVE SAFETY MONITORING.</p>
+            <p>Luis Serrano held the consent packet flat against the table with the side of his hand and read the sentence twice, not because he doubted his eyesight but because experience had taught him the most important promises were usually hidden inside the most neutral language. Across from him, his younger brother Nico had already uncapped the pen but had not yet put it to paper. His knee moved under the chair in a hard quick rhythm he seemed not to feel.</p>
+            <p>Amina let them take the time.</p>
+            <p>The room was built to keep people from feeling handled. Not luxurious. Not intimate in any sentimental way. Just careful. Two soft chairs angled toward each other but not so directly that they looked punitive. A woven rug with enough wear to suggest use rather than branding. Water glasses on a low table. A narrow window facing the parking lot and, beyond it, the jacaranda tree that had started dropping itself in violet scraps across the curb outside. The equipment case sat closed on the credenza beside a box of tissues and a ceramic bowl full of wrapped ginger candies. The point was not to disguise the technology. The point was to keep the room from becoming only that.</p>          </div>
+          <p class="excerpt-note">The novel begins in a room designed for care rather than spectacle, then widens into a world where empath technology has escaped regulation, entered ordinary life, and started testing the moral limits of shared feeling at planetary scale.</p>
         </div>
       </section>
 
