@@ -18,6 +18,7 @@ run_step() {
 
 run_step "$script_dir/create-manuscript.sh"
 run_step "$script_dir/create-pdf.sh"
+run_step "$script_dir/create-epub.sh"
 run_step "$script_dir/create-website.sh"
 
 printf 'All artifacts created successfully.\n'

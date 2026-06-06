@@ -7,9 +7,11 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 manuscript_file="$repo_root/MANUSCRIPT.md"
 cover_file="$repo_root/cover.png"
 pdf_file="$repo_root/What-It-Feels-Like-to-Be-Us.pdf"
+epub_file="$repo_root/What It Feels Like To Be Us.epub"
 website_dir="$repo_root/website"
 index_file="$website_dir/index.html"
 pdf_name="$(basename "$pdf_file")"
+epub_name="$(basename "$epub_file")"
 cover_name="$(basename "$cover_file")"
 
 require_file() {
@@ -213,8 +215,22 @@ fi
 
 require_file "$pdf_file"
 
+if [[ ! -f "$epub_file" ]]; then
+  epub_script="$script_dir/create-epub.sh"
+
+  if [[ ! -f "$epub_script" ]]; then
+    printf 'Missing EPUB and no generator found at %s\n' "$epub_script" >&2
+    exit 1
+  fi
+
+  bash "$epub_script"
+fi
+
+require_file "$epub_file"
+
 mkdir -p "$website_dir"
 cp -f "$pdf_file" "$website_dir/$pdf_name"
+cp -f "$epub_file" "$website_dir/$epub_name"
 cp -f "$cover_file" "$website_dir/$cover_name"
 
 word_count_raw="$(wc -w < "$manuscript_file" | tr -d '[:space:]')"
@@ -222,6 +238,7 @@ word_count="$(format_integer "$word_count_raw")"
 chapter_count="$(grep -c '^### ' "$manuscript_file")"
 act_count="$(grep -c '^## ' "$manuscript_file")"
 pdf_size="$(stat -f '%z' "$pdf_file" | awk '{printf "%.1f MB", $1 / 1048576}')"
+epub_size="$(stat -f '%z' "$epub_file" | awk '{printf "%.1f MB", $1 / 1048576}')"
 updated_stamp="$(date -r "$manuscript_file" '+%B %Y')"
 
 opening_excerpt_raw="$(extract_paragraphs_after_heading '### Chapter 01 - Borrowed Weather' 1 1)"
@@ -1132,6 +1149,7 @@ cat > "$index_file" <<EOF
           <a class="nav-link" href="#acts">The Structure</a>
           <a class="nav-link" href="#download">Read Free</a>
           <a class="button-secondary" href="$pdf_name" target="_blank" rel="noreferrer">Open PDF</a>
+          <a class="button-secondary" href="$epub_name" download>EPUB</a>
         </nav>
       </div>
     </header>
@@ -1146,7 +1164,8 @@ cat > "$index_file" <<EOF
           </h1>
           <p class="lede">A literary speculative novel about empathy, privacy, and the moment shared feeling grows beyond one-to-one exchange into something vast, controversial, and quietly transcendent.</p>
           <div class="hero-actions">
-            <a class="button" href="$pdf_name" download>Download the novel</a>
+            <a class="button" href="$pdf_name" download>Download PDF</a>
+            <a class="button-secondary" href="$epub_name" download>Download EPUB</a>
             <a class="button-secondary" href="#excerpt">Read the opening pulse</a>
           </div>
           <div class="stats" aria-label="Book statistics">
@@ -1257,15 +1276,17 @@ $act_markup
         <div class="download-panel" data-reveal>
           <div>
             <p class="section-label">Read free</p>
-            <h2>The full novel is available as a freely distributed PDF.</h2>
-            <p>Open it in the browser, download it directly, or share the file. The site ships with the finished cover and the PDF edition so the launch page can be dropped onto static hosting without any additional build step.</p>
+            <h2>The full novel is available as freely distributed PDF and EPUB editions.</h2>
+            <p>Open the PDF in the browser, download either edition directly, or share the files. The site ships with the finished cover plus both book formats so the launch page can be dropped onto static hosting without any additional build step.</p>
             <div class="hero-actions">
               <a class="button" href="$pdf_name" download>Download PDF</a>
+              <a class="button-secondary" href="$epub_name" download>Download EPUB</a>
               <a class="button-secondary" href="$pdf_name" target="_blank" rel="noreferrer">Read in browser</a>
             </div>
             <div class="download-meta" aria-label="Edition details">
               <span>Free PDF edition</span>
               <span>$pdf_size</span>
+              <span>EPUB $epub_size</span>
               <span>$updated_stamp</span>
             </div>
           </div>
@@ -1281,6 +1302,7 @@ $act_markup
       <div class="footer-links">
         <a href="#top">Back to top</a>
         <a href="$pdf_name" target="_blank" rel="noreferrer">Open the PDF</a>
+        <a href="$epub_name" download>Download EPUB</a>
         <a href="$cover_name" target="_blank" rel="noreferrer">View the cover</a>
       </div>
     </footer>
@@ -1344,4 +1366,5 @@ EOF
 
 printf 'Wrote %s\n' "$index_file"
 printf 'Copied %s\n' "$website_dir/$pdf_name"
+printf 'Copied %s\n' "$website_dir/$epub_name"
 printf 'Copied %s\n' "$website_dir/$cover_name"
