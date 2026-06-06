@@ -275,6 +275,8 @@ cat > "$index_file" <<EOF
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>What It Feels Like to Be Us</title>
   <meta name="description" content="A freely distributed novel by Joshua Szepietowski about empathy, privacy, mass shared experience, and the quieter possibility that human beings were never fully separate.">
+  <link rel="icon" type="image/png" href="${cover_name}">
+  <link rel="apple-touch-icon" href="${cover_name}">
   <style>
     :root {
       --bg: #07131c;
