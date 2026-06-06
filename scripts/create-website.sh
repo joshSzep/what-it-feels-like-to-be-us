@@ -1304,6 +1304,7 @@ $act_markup
         <a href="$pdf_name" target="_blank" rel="noreferrer">Open the PDF</a>
         <a href="$epub_name" download>Download EPUB</a>
         <a href="$cover_name" target="_blank" rel="noreferrer">View the cover</a>
+        <a href="https://joshszep.com" target="_blank" rel="noreferrer">Author book list</a>
       </div>
     </footer>
   </div>
